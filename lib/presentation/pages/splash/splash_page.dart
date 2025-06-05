@@ -35,7 +35,7 @@ class SplashPage extends StatelessWidget {
                 
                 // Tagline
                 Text(
-                  'Fluye con tu dinero',
+                  'app_tagline'.tr,
                   style: TextStyle(
                     fontSize: 18,
                     color: Colors.white.withOpacity(0.9),

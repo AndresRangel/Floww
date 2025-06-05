@@ -1,4 +1,6 @@
+import 'package:floww/core/theme/theme_helper.dart';
 import 'package:floww/presentation/pages/auth/register_page.dart';
+import 'package:floww/presentation/widgets/languaje_currency_selector.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../core/constants/app_colors.dart';
@@ -12,41 +14,108 @@ class LoginPage extends StatelessWidget {
     final controller = Get.put(LoginController());
     
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(24.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
+        child: Stack(
+          children: [
+            // Contenido principal
+            SingleChildScrollView(
+              padding: const EdgeInsets.all(24.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  const SizedBox(height: 60),
+                  
+                  // Logo y título
+                  _buildHeader(context),
+                  const SizedBox(height: 60),
+                  
+                  // Formulario
+                  _buildForm(controller),
+                  const SizedBox(height: 24),
+                  
+                  // Botón de login
+                  _buildLoginButton(controller),
+                  const SizedBox(height: 16),
+                  
+                  // Olvidé mi contraseña
+                  _buildForgotPassword(),
+                  const SizedBox(height: 32),
+                  
+                  // Divider con "O"
+                  _buildDivider(),
+                  const SizedBox(height: 32),
+                  
+                  // Botones sociales (preparados para el futuro)
+                  _buildSocialButtons(),
+                  const SizedBox(height: 32),
+                  
+                  // Link a registro
+                  _buildRegisterLink(),
+                ],
+              ),
+            ),
+            
+            // Botón de idioma/moneda
+            Positioned(
+              top: 10,
+              right: 20,
+              child: _buildLanguageButton(context),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildLanguageButton(BuildContext context) {
+    // Mapeo de códigos de idioma a banderas
+    final languageFlags = {
+      'es': '🇲🇽',
+      'en': '🇺🇸',
+      'pt': '🇧🇷',
+    };
+    
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: () => showLanguageCurrencySelector(context),
+        borderRadius: BorderRadius.circular(20),
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(20),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.05),
+                blurRadius: 10,
+                offset: const Offset(0, 2),
+              ),
+            ],
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
             children: [
-              const SizedBox(height: 60),
-              
-              // Logo y título
-              _buildHeader(),
-              const SizedBox(height: 60),
-              
-              // Formulario
-              _buildForm(controller),
-              const SizedBox(height: 24),
-              
-              // Botón de login
-              _buildLoginButton(controller),
-              const SizedBox(height: 16),
-              
-              // Olvidé mi contraseña
-              _buildForgotPassword(),
-              const SizedBox(height: 32),
-              
-              // Divider con "O"
-              _buildDivider(),
-              const SizedBox(height: 32),
-              
-              // Botones sociales (preparados para el futuro)
-              _buildSocialButtons(),
-              const SizedBox(height: 32),
-              
-              // Link a registro
-              _buildRegisterLink(),
+              Icon(
+                Icons.language,
+                size: 20,
+                color: AppColors.primaryBlue,
+              ),
+              const SizedBox(width: 6),
+              Text(
+                Get.locale?.languageCode.toUpperCase() ?? 'ES',
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                  color: Theme.of(context).textTheme.bodyLarge!.color,
+                ),
+              ),
+              const SizedBox(width: 4),
+              Text(
+                languageFlags[Get.locale?.languageCode] ?? '🌍',
+                style: const TextStyle(fontSize: 16),
+              ),
             ],
           ),
         ),
@@ -54,7 +123,7 @@ class LoginPage extends StatelessWidget {
     );
   }
 
-  Widget _buildHeader() {
+  Widget _buildHeader(context) {
     return Column(
       children: [
         Container(
@@ -79,17 +148,17 @@ class LoginPage extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 24),
-        const Text(
-          'Bienvenido de vuelta',
-          style: TextStyle(
+        Text(
+          'welcome_back'.tr,
+          style:  TextStyle(
             fontSize: 28,
             fontWeight: FontWeight.bold,
-            color: AppColors.textPrimary,
+            color: Theme.of(context).textTheme.bodyLarge!.color,
           ),
         ),
         const SizedBox(height: 8),
         Text(
-          'Fluye con tu dinero',
+          'app_tagline'.tr,
           style: TextStyle(
             fontSize: 16,
             color: AppColors.textSecondary,
@@ -109,17 +178,17 @@ class LoginPage extends StatelessWidget {
             controller: controller.emailController,
             keyboardType: TextInputType.emailAddress,
             textInputAction: TextInputAction.next,
-            decoration: const InputDecoration(
-              labelText: 'Correo electrónico',
+            decoration: InputDecoration(
+              labelText: 'email'.tr,
               hintText: 'tu@email.com',
               prefixIcon: Icon(Icons.email_outlined),
             ),
             validator: (value) {
               if (value == null || value.isEmpty) {
-                return 'Por favor ingresa tu correo';
+                return 'error_required_field'.tr;
               }
               if (!GetUtils.isEmail(value)) {
-                return 'Ingresa un correo válido';
+                return 'error_invalid_email'.tr;
               }
               return null;
             },
@@ -133,7 +202,7 @@ class LoginPage extends StatelessWidget {
             textInputAction: TextInputAction.done,
             onFieldSubmitted: (_) => controller.login(),
             decoration: InputDecoration(
-              labelText: 'Contraseña',
+              labelText: 'password'.tr,
               hintText: '••••••••',
               prefixIcon: const Icon(Icons.lock_outline),
               suffixIcon: IconButton(
@@ -147,10 +216,10 @@ class LoginPage extends StatelessWidget {
             ),
             validator: (value) {
               if (value == null || value.isEmpty) {
-                return 'Por favor ingresa tu contraseña';
+                return 'error_required_field'.tr;
               }
               if (value.length < 6) {
-                return 'La contraseña debe tener al menos 6 caracteres';
+                return 'error_password_short'.tr;
               }
               return null;
             },
@@ -177,8 +246,8 @@ class LoginPage extends StatelessWidget {
                 strokeWidth: 2,
               ),
             )
-          : const Text(
-              'Iniciar Sesión',
+          : Text(
+              'login'.tr,
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w600,
@@ -197,8 +266,8 @@ class LoginPage extends StatelessWidget {
           snackPosition: SnackPosition.BOTTOM,
         );
       },
-      child: const Text(
-        '¿Olvidaste tu contraseña?',
+      child: Text(
+        'forgot_password'.tr,
         style: TextStyle(color: AppColors.textSecondary),
       ),
     );
@@ -251,13 +320,13 @@ class LoginPage extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Text(
-          '¿No tienes cuenta? ',
+          'no_account'.tr + ' ',
           style: TextStyle(color: AppColors.textSecondary),
         ),
         TextButton(
           onPressed: () => Get.off(() =>  RegisterPage()),
-          child: const Text(
-            'Regístrate',
+          child: Text(
+            'register'.tr,
             style: TextStyle(
               color: AppColors.primaryBlue,
               fontWeight: FontWeight.w600,

@@ -1,3 +1,4 @@
+import 'package:floww/core/theme/theme_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../core/constants/app_colors.dart';
@@ -13,7 +14,7 @@ class RegisterPage extends StatelessWidget {
    
     
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -29,7 +30,7 @@ class RegisterPage extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               // Header
-              _buildHeader(),
+              _buildHeader(context),
               const SizedBox(height: 40),
               
               // Formulario
@@ -53,16 +54,16 @@ class RegisterPage extends StatelessWidget {
     );
   }
 
-  Widget _buildHeader() {
+  Widget _buildHeader(context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
+         Text(
           'Crear cuenta',
           style: TextStyle(
             fontSize: 32,
             fontWeight: FontWeight.bold,
-            color: AppColors.textPrimary,
+            color: Theme.of(context).textTheme.bodyLarge!.color,
           ),
         ),
         const SizedBox(height: 8),

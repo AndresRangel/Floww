@@ -1,3 +1,4 @@
+import 'package:floww/core/theme/theme_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../core/constants/app_colors.dart';
@@ -11,7 +12,7 @@ class ModeSelectionPage extends StatelessWidget {
     final controller = Get.put(ModeSelectionController());
     
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(24.0),
@@ -21,7 +22,7 @@ class ModeSelectionPage extends StatelessWidget {
               const SizedBox(height: 20),
               
               // Header
-              _buildHeader(),
+              _buildHeader(context),
               const SizedBox(height: 40),
               
               // Modes Grid
@@ -39,16 +40,16 @@ class ModeSelectionPage extends StatelessWidget {
     );
   }
 
-  Widget _buildHeader() {
+  Widget _buildHeader(context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
+         Text(
           '¿Qué tipo de negocio manejas?',
           style: TextStyle(
             fontSize: 28,
             fontWeight: FontWeight.bold,
-            color: AppColors.textPrimary,
+            color: Theme.of(context).textTheme.bodyLarge!.color,
           ),
         ),
         const SizedBox(height: 8),
@@ -74,12 +75,12 @@ class ModeSelectionPage extends StatelessWidget {
       itemCount: controller.availableModes.length,
       itemBuilder: (context, index) {
         final mode = controller.availableModes[index];
-        return _buildModeCard(mode, controller);
+        return _buildModeCard(mode, controller,context);
       },
     );
   }
 
-  Widget _buildModeCard(ModeItem mode, ModeSelectionController controller) {
+  Widget _buildModeCard(ModeItem mode, ModeSelectionController controller,context) {
     return Obx(() {
       final isSelected = controller.selectedMode.value?.id == mode.id;
       
@@ -88,7 +89,7 @@ class ModeSelectionPage extends StatelessWidget {
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 200),
           decoration: BoxDecoration(
-            color: isSelected ? mode.color.withOpacity(0.1) : AppColors.surface,
+            color: isSelected ? mode.color.withOpacity(0.1) : Theme.of(context).cardColor,
             borderRadius: BorderRadius.circular(20),
             border: Border.all(
               color: isSelected ? mode.color : Colors.transparent,
@@ -154,7 +155,7 @@ class ModeSelectionPage extends StatelessWidget {
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
-                        color: isSelected ? mode.color : AppColors.textPrimary,
+                        color: isSelected ? mode.color : Theme.of(context).textTheme.bodyLarge!.color,
                       ),
                       textAlign: TextAlign.center,
                     ),

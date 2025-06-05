@@ -1,27 +1,48 @@
+import 'package:floww/core/internationalization/app_translation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'core/theme/app_theme.dart';
+import 'core/services/currency_service.dart';
+import 'core/services/locale_service.dart';
 import 'presentation/pages/splash/splash_page.dart';
 
-void main() {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   
+  // Inicializar servicios
+  await initServices();
+  
   // Configurar orientación (solo vertical)
-  SystemChrome.setPreferredOrientations([
+  await SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown,
   ]);
   
-  // Configurar barra de estado
-  SystemChrome.setSystemUIOverlayStyle(
-    const SystemUiOverlayStyle(
-      statusBarColor: Colors.transparent,
-      statusBarIconBrightness: Brightness.dark,
-    ),
-  );
-  
   runApp(const FlowwApp());
+}
+
+// Inicializar servicios globales
+Future<void> initServices() async {
+  print('=== Iniciando servicios ===');
+  
+  // Inicializar CurrencyService
+  final currencyService = await Get.putAsync(() => CurrencyService().init());
+  print('CurrencyService iniciado con: ${currencyService.code}');
+  
+  // Pequeño delay para asegurar que el servicio esté listo
+  await Future.delayed(const Duration(milliseconds: 100));
+  
+  // Detectar y configurar idioma/moneda automáticamente
+  try {
+    print('Llamando a LocaleService.setupLocaleAndCurrency()...');
+    LocaleService.setupLocaleAndCurrency();
+    print('LocaleService ejecutado correctamente');
+    print('Moneda final: ${currencyService.code}');
+  } catch (e, stackTrace) {
+    print('Error configurando LocaleService: $e');
+    print('StackTrace: $stackTrace');
+  }
 }
 
 class FlowwApp extends StatelessWidget {
@@ -32,7 +53,17 @@ class FlowwApp extends StatelessWidget {
     return GetMaterialApp(
       title: 'Floww',
       debugShowCheckedModeBanner: false,
+      
+      // Temas
       theme: AppTheme.lightTheme,
+      darkTheme: AppTheme.darkTheme,
+      themeMode: ThemeMode.light, // Tema claro por defecto
+      
+      // Internacionalización
+      translations: AppTranslations(),
+      locale: const Locale('es', 'CO'), // Forzar español Colombia
+      fallbackLocale: const Locale('en', 'US'),
+      
       home: const SplashPage(),
       
       // Configuración de GetX
@@ -41,6 +72,21 @@ class FlowwApp extends StatelessWidget {
       
       // Prevenir que el texto sea muy grande o muy pequeño
       builder: (context, child) {
+        // Actualizar barra de estado según el tema
+        final brightness = Theme.of(context).brightness;
+        SystemChrome.setSystemUIOverlayStyle(
+          SystemUiOverlayStyle(
+            statusBarColor: Colors.transparent,
+            statusBarIconBrightness: brightness == Brightness.dark 
+                ? Brightness.light 
+                : Brightness.dark,
+            systemNavigationBarColor: Theme.of(context).scaffoldBackgroundColor,
+            systemNavigationBarIconBrightness: brightness == Brightness.dark 
+                ? Brightness.light 
+                : Brightness.dark,
+          ),
+        );
+        
         return MediaQuery(
           data: MediaQuery.of(context).copyWith(
             textScaler: TextScaler.linear(

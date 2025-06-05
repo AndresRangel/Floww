@@ -2,7 +2,7 @@ import 'package:get/get.dart';
 import '../auth/login_page.dart';
 
 class SplashController extends GetxController {
-  final RxString loadingText = 'Iniciando...'.obs;
+  final RxString loadingText = 'loading'.tr.obs;
 
   @override
   void onInit() {
@@ -14,10 +14,10 @@ class SplashController extends GetxController {
     try {
       // Simular proceso de carga
       await Future.delayed(const Duration(seconds: 1));
-      loadingText.value = 'Cargando configuración...';
+      loadingText.value = 'loading'.tr;
       
       await Future.delayed(const Duration(seconds: 1));
-      loadingText.value = 'Preparando tu experiencia...';
+      loadingText.value = 'loading'.tr;
       
       await Future.delayed(const Duration(seconds: 1));
       

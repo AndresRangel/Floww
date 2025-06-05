@@ -31,6 +31,8 @@ dependencies:
   flutter:
     sdk: flutter
   get: ^4.6.6 
+  intl: ^0.18.1  # Para formateo de monedas y fechas
+  image_picker: ^1.0.4
 
 
   # The following adds the Cupertino Icons font to your application.
